@@ -1,103 +1,107 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+
+// Función para obtener los datos desde la API (usando Random User Generator)
+export async function getData() {
+  const res = await fetch('https://randomuser.me/api/?results=2500');
+  const data = await res.json();
+  return data.results;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  // Usamos useEffect para cargar los datos cuando el componente se monta
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getData();
+      setUsers(data);
+    };
+    fetchData();
+  }, []);
+
+  const handleNextPage = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  // Datos de la página actual
+  const paginatedUsers = users.slice((page - 1) * pageSize, page * pageSize);
+
+  return (
+    <div
+      style={{
+        fontFamily: 'Arial, sans-serif',
+        padding: '20px',
+        backgroundColor: '#f4f6f9', // Fondo gris claro
+        minHeight: '100vh',
+        color: '#333',
+      }}
+    >
+      <h1 style={{ textAlign: 'center', fontSize: '2rem', color: '#333' }}>Usuarios</h1>
+      <table style={{ width: '100%', borderCollapse: 'collapse', margin: '20px 0' }}>
+        <thead>
+          <tr style={{ backgroundColor: '#f4f4f4' }}>
+            <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
+            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
+            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Correo Electrónico</th>
+            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Ciudad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedUsers.map((user, index) => (
+            <tr key={index}>
+              <td style={{ padding: '10px', border: '1px solid #ddd' }}>{user.login.uuid}</td>
+              <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                {user.name.first} {user.name.last}
+              </td>
+              <td style={{ padding: '10px', border: '1px solid #ddd' }}>{user.email}</td>
+              <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                {user.location.city}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Paginación */}
+      <div style={{ textAlign: 'center' }}>
+        <button
+          onClick={handlePreviousPage}
+          style={{
+            padding: '10px 20px',
+            margin: '5px',
+            backgroundColor: '#007BFF',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            borderRadius: '4px',
+          }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          Anterior
+        </button>
+        <span style={{ padding: '10px' }}>Página {page}</span>
+        <button
+          onClick={handleNextPage}
+          style={{
+            padding: '10px 20px',
+            margin: '5px',
+            backgroundColor: '#007BFF',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            borderRadius: '4px',
+          }}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Siguiente
+        </button>
+      </div>
     </div>
   );
 }
