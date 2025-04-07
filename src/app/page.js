@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// Función para obtener los datos desde la API (usando Random User Generator)
+// Función para obtener los datos desde la API (Random User Generator)
 export async function getData() {
   const res = await fetch('https://randomuser.me/api/?results=2500');
   const data = await res.json();
@@ -38,66 +38,74 @@ export default function Home() {
     <div
       style={{
         fontFamily: 'Arial, sans-serif',
-        padding: '20px',
-        backgroundColor: '#f4f6f9', // Fondo gris claro
+        padding: '40px',
+        background: 'linear-gradient(135deg, #007BFF 0%, #4CAF50 100%)', // Gradiente de colores corporativos
+        color: '#fff',  // Color de texto blanco para contraste con el fondo
         minHeight: '100vh',
-        color: '#333',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
-      <h1 style={{ textAlign: 'center', fontSize: '2rem', color: '#333' }}>Usuarios</h1>
-      <table style={{ width: '100%', borderCollapse: 'collapse', margin: '20px 0' }}>
-        <thead>
-          <tr style={{ backgroundColor: '#f4f4f4' }}>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>ID</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Nombre</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Correo Electrónico</th>
-            <th style={{ padding: '10px', border: '1px solid #ddd' }}>Ciudad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedUsers.map((user, index) => (
-            <tr key={index}>
-              <td style={{ padding: '10px', border: '1px solid #ddd' }}>{user.login.uuid}</td>
-              <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                {user.name.first} {user.name.last}
-              </td>
-              <td style={{ padding: '10px', border: '1px solid #ddd' }}>{user.email}</td>
-              <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                {user.location.city}
-              </td>
+      <h1 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#fff', marginBottom: '20px' }}>
+        Usuarios Corporativos
+      </h1>
+
+      {/* Tabla de usuarios */}
+      <div style={{ width: '90%', overflowX: 'auto', marginTop: '20px' }}>
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <thead>
+            <tr style={{ backgroundColor: '#007BFF', color: '#fff', fontWeight: 'bold' }}>
+              <th style={tableHeaderStyle}>ID</th>
+              <th style={tableHeaderStyle}>Nombre</th>
+              <th style={tableHeaderStyle}>Correo Electrónico</th>
+              <th style={tableHeaderStyle}>Ciudad</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedUsers.map((user, index) => (
+              <tr
+                key={index}
+                style={{
+                  backgroundColor: '#f7f7f7',  // Color de fondo más suave para las filas
+                  textAlign: 'left',
+                  transition: 'background-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = '#e0e0e0')}  // Cambio de color al pasar el mouse
+                onMouseLeave={(e) => (e.target.style.backgroundColor = '#f7f7f7')}
+              >
+                <td style={tableCellStyle}>{user.login.uuid}</td>
+                <td style={tableCellStyle}>
+                  {user.name.first} {user.name.last}
+                </td>
+                <td style={tableCellStyle}>{user.email}</td>
+                <td style={tableCellStyle}>{user.location.city}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Paginación */}
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <button
           onClick={handlePreviousPage}
-          style={{
-            padding: '10px 20px',
-            margin: '5px',
-            backgroundColor: '#007BFF',
-            color: '#fff',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '4px',
-          }}
+          style={paginationButtonStyle}
         >
           Anterior
         </button>
-        <span style={{ padding: '10px' }}>Página {page}</span>
+        <span style={{ padding: '10px', fontSize: '1.2rem', color: '#fff' }}>Página {page}</span>
         <button
           onClick={handleNextPage}
-          style={{
-            padding: '10px 20px',
-            margin: '5px',
-            backgroundColor: '#007BFF',
-            color: '#fff',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '4px',
-          }}
+          style={paginationButtonStyle}
         >
           Siguiente
         </button>
@@ -105,3 +113,32 @@ export default function Home() {
     </div>
   );
 }
+
+// Estilos para la tabla
+const tableHeaderStyle = {
+  padding: '12px 20px',
+  borderBottom: '2px solid #ddd',
+  textAlign: 'center',
+  backgroundColor: '#007BFF',
+  color: '#fff',
+  fontSize: '1rem',
+};
+
+const tableCellStyle = {
+  padding: '12px 20px',
+  borderBottom: '1px solid #ddd',
+  textAlign: 'center',
+  color: '#333',  // Color de texto en las celdas
+};
+
+// Estilos para los botones de paginación
+const paginationButtonStyle = {
+  padding: '10px 20px',
+  margin: '5px',
+  backgroundColor: '#4CAF50',
+  color: '#fff',
+  border: 'none',
+  cursor: 'pointer',
+  borderRadius: '4px',
+  fontSize: '1rem',
+};
